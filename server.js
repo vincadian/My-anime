@@ -36,11 +36,21 @@ app.post("/anime/:user_id", async (req, res) => {
   
 
   try { 
-    const insertAnime = await pool.query(
-        `INSERT INTO animes (title) VALUES ($1) RETURNING id`,
+
+    const existingAnime = await pool.query(
+        `SELECT id FROM animes WHERE title = $1`,
         [title]
-    )
-    const anime_id = insertAnime.rows[0].id;
+    );
+    let anime_id;
+    if (existingAnime.rows.length > 0) {
+        anime_id = existingAnime.rows[0].id;
+    } else {
+        const insertAnime = await pool.query(
+            `INSERT INTO animes (title) VALUES ($1) RETURNING id`,
+            [title]
+        )
+        anime_id = insertAnime.rows[0].id;
+    }
 
     const insertRating =  await pool.query(
         `INSERT INTO user_anime_ratings (user_id, anime_id, rang, note) VALUES ($1, $2, $3, $4) RETURNING *`,
