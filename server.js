@@ -60,11 +60,7 @@ app.post("/anime/:user_id", async (req, res) => {
 app.delete("/anime/delete/:id/:user_id", async (req, res) => {
     const { id, user_id } = req.params;
     try {
-        const deleteAnime = await pool.query(
-            `DELETE FROM animes WHERE id = $1 RETURNING *`,
-            [id]
-        );
-        res.json(deleteAnime.rows[0]);
+        
         
         const deleteRating = await pool.query(
             `DELETE FROM user_anime_ratings WHERE anime_id = $1 AND user_id = $2 RETURNING *`,
